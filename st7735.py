@@ -39,8 +39,8 @@ class ST7735:
         self.fill(0x0000)
 
     def draw_pixel(self, x: int, y: int, color: str) -> None:
-        if not 0 <= x < self.WIDTH or not 0 <= y < self.HEIGHT:
-            raise ValueError("pixel coordinates are outside the display")
+        x = min(max(x, 0), self.WIDTH - 1)
+        y = min(max(y, 0), self.HEIGHT - 1)
         if len(color) != 7 or color[0] != "#":
             raise ValueError("color must use #RRGGBB format")
 
