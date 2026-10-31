@@ -1,6 +1,15 @@
 from microbit import pin1, pin13, pin14, pin15, pin16, sleep, spi  # type: ignore[reportMissingModuleSource]
 
 
+_FONT_5X7 = {
+    "H": ("10001", "10001", "10001", "11111", "10001", "10001", "10001"),
+    "e": ("00000", "00000", "01110", "10001", "11111", "10000", "01110"),
+    "l": ("01100", "00100", "00100", "00100", "00100", "00100", "01110"),
+    "o": ("00000", "00000", "01110", "10001", "10001", "10001", "01110"),
+    " ": ("00000", "00000", "00000", "00000", "00000", "00000", "00000"),
+}
+
+
 class ST7735:
     WIDTH = 128
     HEIGHT = 160
@@ -53,6 +62,24 @@ class ST7735:
         self._set_window(x, y, x, y)
         self._command(0x2C)
         self._data(bytes((color >> 8, color & 0xFF)))
+
+    def draw_text(self, text: str, x: int, y: int, color: str) -> None:
+        lines = text.split("\n")
+        text_width = max((len(line) for line in lines), default=0) * 6
+        for line_number, line in enumerate(lines):
+            for character_number, character in enumerate(line):
+                if character not in _FONT_5X7:
+                    raise ValueError("unsupported character: " + character)
+
+                glyph = _FONT_5X7[character]
+                for row, pixels in enumerate(glyph):
+                    for column, pixel in enumerate(pixels):
+                        if pixel != "1":
+                            continue
+                        pixel_x = x + line_number * 8 + row
+                        pixel_y = y + text_width - 1 - (character_number * 6 + column)
+                        if 0 <= pixel_x < self.WIDTH and 0 <= pixel_y < self.HEIGHT:
+                            self.draw_pixel(pixel_x, pixel_y, color)
 
     def fill(self, color: int) -> None:
         if not 0 <= color <= 0xFFFF:
