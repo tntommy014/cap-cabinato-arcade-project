@@ -1,5 +1,7 @@
+# Documentazione microbit
+- https://microbit-micropython.readthedocs.io/en/v2-docs/index.html
+
 # Dindonkey
-- mettere a posto scritte grige e autocompletamento
 
 # TNTommy
 - far funzionare joystick
