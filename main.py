@@ -12,7 +12,12 @@ def main():
     old_x = x
     old_y = y
     screen = ST7735()
-    screen.draw_text(text="Hello", x=50, y=50, color="#0000FF")
+    screen.draw_text(
+        text="ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789",
+        x=0,
+        y=0,
+        color="#0000FF",
+    )
     screen.draw_pixel(x=x, y=y, color=COLOR)
     
     while True:
