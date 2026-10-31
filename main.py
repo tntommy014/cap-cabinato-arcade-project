@@ -1,4 +1,4 @@
-from microbit import button_a, button_b, uart  # type: ignore[reportMissingModuleSource]
+from microbit import *  # pyright: ignore[reportWildcardImportFromLibrary]
 from st7735 import ST7735
 
 SCREEN_WIDTH = 128
@@ -25,7 +25,5 @@ def main():
             screen.draw_pixel(x=old_x, y=old_y, color=BACKGROUND_COLOR)
             screen.draw_pixel(x=x, y=y, color=COLOR)
             old_x = x
-        
-        
-
+           
 main()

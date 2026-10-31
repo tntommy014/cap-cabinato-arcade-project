@@ -1,0 +1,6 @@
+{
+  "python.languageServer": "None",
+  "micropython-lsp.enable": true,
+  "micropython-lsp.target": "microbit",
+  "editor.inlayHints.enabled": "off",
+}
