@@ -7,10 +7,6 @@ SCREEN_HEIGHT = 160
 COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
 
-def draw_black(x, y):
-    global screen
-    screen.draw_pixel(x=x, y=y, color=COLOR)
-
 def main():
     try:
         global screen
