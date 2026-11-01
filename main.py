@@ -8,15 +8,22 @@ COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
 PLAYER_MOVEMENT_SLEEP = 30
 
+yp = SCREEN_WIDTH // 2
+xp = SCREEN_HEIGHT // 2
+old_xp = xp
+old_yp = yp
+
+def move_player():
+    global xp, yp, old_xp, old_yp
+    screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
+    screen.draw_pixel(x=xp, y=yp, color=COLOR)
+    old_xp = xp
+    old_yp = yp
+    sleep(PLAYER_MOVEMENT_SLEEP)
+
 def main():
     try:
-        global screen
-        global x
-        global y
-        yp = SCREEN_WIDTH // 2
-        xp = SCREEN_HEIGHT // 2
-        old_xp = xp
-        old_yp = yp
+        global screen, xp, yp, old_xp, old_yp
         screen = ST7735()
         display.off()
         uart.init(baudrate=115200)
@@ -40,32 +47,16 @@ def main():
             jright = pin6.read_digital()
             if jup == 1:
                 xp -= 1
-                screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
-                screen.draw_pixel(x=xp, y=yp, color=COLOR)
-                old_xp = xp
-                old_yp = yp
-                sleep(PLAYER_MOVEMENT_SLEEP)
+                move_player()
             if jdown == 1:
                 xp += 1
-                screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
-                screen.draw_pixel(x=xp, y=yp, color=COLOR)
-                old_xp = xp
-                old_yp = yp
-                sleep(PLAYER_MOVEMENT_SLEEP)
+                move_player()
             if jleft == 1:
                 yp += 1
-                screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
-                screen.draw_pixel(x=xp, y=yp, color=COLOR)
-                old_xp = xp
-                old_yp = yp
-                sleep(PLAYER_MOVEMENT_SLEEP)
+                move_player()
             if jright == 1:
                 yp -= 1
-                screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
-                screen.draw_pixel(x=xp, y=yp, color=COLOR)
-                old_xp = xp
-                old_yp = yp
-                sleep(PLAYER_MOVEMENT_SLEEP)
+                move_player()
             # uart.write("jup = " + str(jup) + " jdown = " + str(jdown) + " jleft = " + str(jleft) + " jright = " + str(jright) + "\n")
                 
     except Exception as e:
