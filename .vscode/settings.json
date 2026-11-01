@@ -1,6 +1,8 @@
 {
-  "python.languageServer": "None",
+  // "python.languageServer": "None",
+  "python.analysis.typeCheckingMode": "standard",
   "micropython-lsp.enable": true,
   "micropython-lsp.target": "microbit",
   "editor.inlayHints.enabled": "off",
+  "bbcmicrobit-micropython.files.exclude": ["typings/**", ".vscode/**", "*.md"]
 }
