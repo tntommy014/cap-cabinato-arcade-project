@@ -6,14 +6,15 @@ SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 160
 COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
+PLAYER_MOVEMENT_SLEEP = 30
 
 def main():
     try:
         global screen
         global x
         global y
-        xp = SCREEN_WIDTH // 2
-        yp = SCREEN_HEIGHT // 2
+        yp = SCREEN_WIDTH // 2
+        xp = SCREEN_HEIGHT // 2
         old_xp = xp
         old_yp = yp
         screen = ST7735()
@@ -37,12 +38,13 @@ def main():
             jdown = pin4.read_digital()
             jleft = pin7.read_digital()
             jright = pin6.read_digital()
-            # if pin3.read_digital() == 1:
-            #     yp -= 1
-            #     screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
-            #     screen.draw_pixel(x=xp, y=yp, color="#00FF00")
-            #     old_xp = xp
-            #     old_yp = yp
+            if jup == 1:
+                yp -= 1
+                screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
+                screen.draw_pixel(x=xp, y=yp, color="#00FF00")
+                old_xp = xp
+                old_yp = yp
+                sleep(PLAYER_MOVEMENT_SLEEP)
             # uart.write("jup = " + str(jup) + " jdown = " + str(jdown) + " jleft = " + str(jleft) + " jright = " + str(jright) + "\n")
                 
     except Exception as e:
