@@ -39,12 +39,36 @@ def main():
             jleft = pin7.read_digital()
             jright = pin6.read_digital()
             if jup == 1:
+                xp -= 1
+                screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
+                screen.draw_pixel(x=xp, y=yp, color="#00FF00")
+                old_xp = xp
+                old_yp = yp
+                sleep(PLAYER_MOVEMENT_SLEEP)
+            if jdown == 1:
+                xp += 1
+                screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
+                screen.draw_pixel(x=xp, y=yp, color="#00FF00")
+                old_xp = xp
+                old_yp = yp
+                sleep(PLAYER_MOVEMENT_SLEEP)
+            if jleft == 1:
+                yp += 1
+                screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
+                screen.draw_pixel(x=xp, y=yp, color="#00FF00")
+                old_xp = xp
+                old_yp = yp
+                sleep(PLAYER_MOVEMENT_SLEEP)
+            if jright == 1:
                 yp -= 1
                 screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
                 screen.draw_pixel(x=xp, y=yp, color="#00FF00")
                 old_xp = xp
                 old_yp = yp
                 sleep(PLAYER_MOVEMENT_SLEEP)
+
+            
+            
             # uart.write("jup = " + str(jup) + " jdown = " + str(jdown) + " jleft = " + str(jleft) + " jright = " + str(jright) + "\n")
                 
     except Exception as e:
