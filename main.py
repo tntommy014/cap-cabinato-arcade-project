@@ -31,14 +31,23 @@ def main():
         #     color="#0000FF",
         # )
         screen.draw_pixel(x=xp, y=yp, color=COLOR)
+        pin3.set_pull(pin3.PULL_DOWN)
+        pin4.set_pull(pin4.PULL_DOWN)
+        pin7.set_pull(pin7.PULL_DOWN)
+        pin6.set_pull(pin6.PULL_DOWN)
         
         while True:
-            if pin3.read_digital() == 1:
-                yp -= 1
-                screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
-                screen.draw_pixel(x=xp, y=yp, color="#00FF00")
-                old_xp = xp
-                old_yp = yp
+            jup = pin3.read_digital()
+            jdown = pin4.read_digital()
+            jleft = pin7.read_digital()
+            jright = pin6.read_digital()
+            # if pin3.read_digital() == 1:
+            #     yp -= 1
+            #     screen.draw_pixel(x=old_xp, y=old_yp, color="#000000")
+            #     screen.draw_pixel(x=xp, y=yp, color="#00FF00")
+            #     old_xp = xp
+            #     old_yp = yp
+            # uart.write("jup = " + str(jup) + " jdown = " + str(jdown) + " jleft = " + str(jleft) + " jright = " + str(jright) + "\n")
                 
     except Exception as e:
                 uart.write(repr(e))
