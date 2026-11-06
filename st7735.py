@@ -69,8 +69,8 @@ _FONT_5X7 = {
 
 
 class ST7735:
-    WIDTH = 128
-    HEIGHT = 160
+    WIDTH = 160
+    HEIGHT = 128
 
     def __init__(self) -> None:
         self._dc = pin1
@@ -95,9 +95,9 @@ class ST7735:
         self._command_data(0xC4, b"\x8A\xEE")
         self._command_data(0xC5, b"\x0E")
         self._command_data(0x3A, b"\x05")
-        self._command_data(0x36, b"\xC0")
-        self._command_data(0x2A, b"\x00\x00\x00\x7F")
-        self._command_data(0x2B, b"\x00\x00\x00\x9F")
+        self._command_data(0x36, b"\xA0")
+        self._command_data(0x2A, bytes((0, 0, 0, self.WIDTH - 1)))
+        self._command_data(0x2B, bytes((0, 0, 0, self.HEIGHT - 1)))
         self._command(0x20)
         self._command(0x13)
         sleep(10)
