@@ -77,6 +77,8 @@ class ST7735:
         self._cs = pin16
         self._cs.write_digital(1)
         self._dc.write_digital(1)
+        self._pixel_buffer = bytearray(256)
+        self._pixel_buffer_view = memoryview(self._pixel_buffer)
 
         spi.init(baudrate=8_000_000, bits=8, mode=0, sclk=pin13, mosi=pin15, miso=pin14)
 
@@ -108,6 +110,68 @@ class ST7735:
     def draw_pixel(self, x: int, y: int, color: str) -> None:
         x = min(max(x, 0), self.WIDTH - 1)
         y = min(max(y, 0), self.HEIGHT - 1)
+        self._write_run(x, y, x, y, self._color_to_rgb565(color))
+
+    def draw_matrix(self, matrix: list, x: int, y: int, color: str) -> None:
+        rgb565 = self._color_to_rgb565(color)
+
+        for row, values in enumerate(matrix):
+            pixel_y = y + row
+            if not 0 <= pixel_y < self.HEIGHT:
+                continue
+
+            column = 0
+            while column < len(values):
+                while column < len(values) and values[column] != 1:
+                    column += 1
+                run_start = column
+                while column < len(values) and values[column] == 1:
+                    column += 1
+
+                run_x0 = max(x + run_start, 0)
+                run_x1 = min(x + column - 1, self.WIDTH - 1)
+                if run_start < column and run_x0 <= run_x1:
+                    self._write_run(run_x0, pixel_y, run_x1, pixel_y, rgb565)
+
+    def draw_text(self, text: str, x: int, y: int, color: str) -> None:
+        lines = text.split("\n")
+        text_width = max((len(line) for line in lines), default=0) * 6
+        for character in text:
+            if character != "\n" and character not in _FONT_5X7:
+                raise ValueError("unsupported character: " + character)
+
+        rgb565 = self._color_to_rgb565(color)
+        for line_number, line in enumerate(lines):
+            for character_number, character in enumerate(line):
+                glyph = _FONT_5X7[character]
+                for row, pixels in enumerate(glyph):
+                    pixel_x = x + line_number * 8 + row
+                    if not 0 <= pixel_x < self.WIDTH:
+                        continue
+
+                    column = 0
+                    while column < len(pixels):
+                        while column < len(pixels) and pixels[column] != "1":
+                            column += 1
+                        run_start = column
+                        while column < len(pixels) and pixels[column] == "1":
+                            column += 1
+
+                        run_y0 = y + text_width - character_number * 6 - column
+                        run_y1 = y + text_width - 1 - (character_number * 6 + run_start)
+                        run_y0 = max(run_y0, 0)
+                        run_y1 = min(run_y1, self.HEIGHT - 1)
+                        if run_start < column and run_y0 <= run_y1:
+                            self._write_run(pixel_x, run_y0, pixel_x, run_y1, rgb565)
+
+    def fill(self, color: int) -> None:
+        if not 0 <= color <= 0xFFFF:
+            raise ValueError("color must be a 16-bit RGB565 value")
+
+        self._write_run(0, 0, self.WIDTH - 1, self.HEIGHT - 1, color)
+
+    @staticmethod
+    def _color_to_rgb565(color: str) -> int:
         if len(color) != 7 or color[0] != "#":
             raise ValueError("color must use #RRGGBB format")
 
@@ -115,53 +179,25 @@ class ST7735:
         red = (rgb >> 16) & 0xFF
         green = (rgb >> 8) & 0xFF
         blue = rgb & 0xFF
-        color = ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3)
+        return ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3)
 
-        self._set_window(x, y, x, y)
-        self._command(0x2C)
-        self._data(bytes((color >> 8, color & 0xFF)))
-
-    def draw_matrix(self, matrix: list, x: int, y: int, color: str) -> None:
-        for row, values in enumerate(matrix):
-            for column, value in enumerate(values):
-                pixel_x = x + column
-                pixel_y = y + row
-                if value == 1 and 0 <= pixel_x < self.WIDTH and 0 <= pixel_y < self.HEIGHT:
-                    self.draw_pixel(pixel_x, pixel_y, color)
-
-    def draw_text(self, text: str, x: int, y: int, color: str) -> None:
-        lines = text.split("\n")
-        text_width = max((len(line) for line in lines), default=0) * 6
-        for line_number, line in enumerate(lines):
-            for character_number, character in enumerate(line):
-                if character not in _FONT_5X7:
-                    raise ValueError("unsupported character: " + character)
-
-                glyph = _FONT_5X7[character]
-                for row, pixels in enumerate(glyph):
-                    for column, pixel in enumerate(pixels):
-                        if pixel != "1":
-                            continue
-                        pixel_x = x + line_number * 8 + row
-                        pixel_y = y + text_width - 1 - (character_number * 6 + column)
-                        if 0 <= pixel_x < self.WIDTH and 0 <= pixel_y < self.HEIGHT:
-                            self.draw_pixel(pixel_x, pixel_y, color)
-
-    def fill(self, color: int) -> None:
-        if not 0 <= color <= 0xFFFF:
-            raise ValueError("color must be a 16-bit RGB565 value")
-
-        self._set_window(0, 0, self.WIDTH - 1, self.HEIGHT - 1)
+    def _write_run(self, x0: int, y0: int, x1: int, y1: int, color: int) -> None:
+        self._set_window(x0, y0, x1, y1)
         self._command(0x2C)
 
-        pixel = bytes((color >> 8, color & 0xFF))
-        chunk = pixel * 64
-        remaining = self.WIDTH * self.HEIGHT
+        high = color >> 8
+        low = color & 0xFF
+        remaining = (x1 - x0 + 1) * (y1 - y0 + 1)
+        buffered_pixels = min(remaining, len(self._pixel_buffer) // 2)
+        for offset in range(0, buffered_pixels * 2, 2):
+            self._pixel_buffer[offset] = high
+            self._pixel_buffer[offset + 1] = low
+
         self._cs.write_digital(0)
         self._dc.write_digital(1)
         while remaining:
-            pixels = min(remaining, 64)
-            spi.write(chunk if pixels == 64 else pixel * pixels)
+            pixels = min(remaining, len(self._pixel_buffer) // 2)
+            spi.write(self._pixel_buffer_view[:pixels * 2])
             remaining -= pixels
         self._cs.write_digital(1)
 
