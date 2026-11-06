@@ -6,11 +6,20 @@ SCREEN_WIDTH = 160
 SCREEN_HEIGHT = 128
 COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
-PLAYER_MOVEMENT_SLEEP = 30
+PLAYER_MOVEMENT_SLEEP = 10
 
-def draw_player(x, y, old_x, old_y):
-    screen.draw_pixel(x=old_x, y=old_y, color=BACKGROUND_COLOR)
-    screen.draw_pixel(x=x, y=y, color=COLOR)
+# PLAYER_SPRITE = [[0, 1, 0],
+#                  [1, 1, 1],
+#                  [0, 1, 0]]
+
+PLAYER_SPRITE = [[0, 1, 1, 1, 0],
+                 [1, 1, 0, 1, 1],
+                 [1, 1, 0, 1, 1],
+                 [0, 1, 1, 1, 0]]
+
+def draw_sprite(x, y, old_x, old_y, sprite):
+    screen.draw_matrix(sprite, old_x, old_y, BACKGROUND_COLOR)
+    screen.draw_matrix(sprite, x, y, COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
 
 def main():
@@ -23,10 +32,10 @@ def main():
         pin7.set_pull(pin7.PULL_DOWN)
         pin6.set_pull(pin6.PULL_DOWN)
         
-        xp = SCREEN_WIDTH // 2
-        yp = SCREEN_HEIGHT // 2
+        xp = SCREEN_WIDTH // 2 - len(PLAYER_SPRITE[0]) // 2
+        yp = SCREEN_HEIGHT // 2 - len(PLAYER_SPRITE) // 2
         
-        screen.draw_pixel(x=xp, y=yp, color=COLOR)
+        screen.draw_matrix(PLAYER_SPRITE, xp, yp, COLOR)
 
         while True:
             jup = pin3.read_digital()
@@ -37,22 +46,22 @@ def main():
                 old_yp = yp
                 old_xp = xp
                 yp -= 1 
-                draw_player(xp, yp, old_xp, old_yp)
+                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jdown == 1:
                 old_yp = yp
                 old_xp = xp
                 yp += 1
-                draw_player(xp, yp, old_xp, old_yp)
+                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jleft == 1:
                 old_xp = xp
                 old_yp = yp
                 xp -= 1
-                draw_player(xp, yp, old_xp, old_yp)
+                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jright == 1:
                 old_xp = xp
                 old_yp = yp
                 xp += 1
-                draw_player(xp, yp, old_xp, old_yp)
+                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
                 
     except Exception as e:
                 uart.write(repr(e))

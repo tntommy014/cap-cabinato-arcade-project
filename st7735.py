@@ -121,6 +121,14 @@ class ST7735:
         self._command(0x2C)
         self._data(bytes((color >> 8, color & 0xFF)))
 
+    def draw_matrix(self, matrix: list, x: int, y: int, color: str) -> None:
+        for row, values in enumerate(matrix):
+            for column, value in enumerate(values):
+                pixel_x = x + column
+                pixel_y = y + row
+                if value == 1 and 0 <= pixel_x < self.WIDTH and 0 <= pixel_y < self.HEIGHT:
+                    self.draw_pixel(pixel_x, pixel_y, color)
+
     def draw_text(self, text: str, x: int, y: int, color: str) -> None:
         lines = text.split("\n")
         text_width = max((len(line) for line in lines), default=0) * 6
