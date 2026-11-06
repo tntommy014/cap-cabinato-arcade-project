@@ -13,14 +13,9 @@ yp = SCREEN_HEIGHT // 2
 old_xp = xp
 old_yp = yp
 
-def move_player():
-    global xp, yp, old_xp, old_yp
-    xp = min(max(xp, 0), SCREEN_WIDTH - 1)
-    yp = min(max(yp, 0), SCREEN_HEIGHT - 1)
+def draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp):
     screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
     screen.draw_pixel(x=xp, y=yp, color=COLOR)
-    old_xp = xp
-    old_yp = yp
     sleep(PLAYER_MOVEMENT_SLEEP)
 
 def main():
@@ -28,8 +23,6 @@ def main():
         global screen, xp, yp, old_xp, old_yp
         screen = ST7735()
         display.off()
-        uart.init(baudrate=115200)
-        uart.write('hello world')
         # screen.draw_text(
         #     text="ciao sono Pippo\nche scoreggia a piu\nnon posso per tutta la citta",
         #     x=2,
@@ -48,19 +41,27 @@ def main():
             jleft = pin7.read_digital()
             jright = pin6.read_digital()
             if jup == 1:
-                yp -= 1
-                move_player()
+                old_yp = yp
+                old_xp = xp
+                yp = yp - 1 
+                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
             if jdown == 1:
-                yp += 1
-                move_player()
+                old_yp = yp
+                old_xp = xp
+                yp = yp + 1
+                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
             if jleft == 1:
-                xp -= 1
-                move_player()
+                old_xp = xp
+                old_yp = yp
+                xp = xp - 1
+                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
             if jright == 1:
-                xp += 1
-                move_player()
+                old_xp = xp
+                old_yp = yp
+                xp = xp + 1
+                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
             # uart.write("jup = " + str(jup) + " jdown = " + str(jdown) + " jleft = " + str(jleft) + " jright = " + str(jright) + "\n")
-            uart.write("xp = " + str(xp) + " yp = " + str(yp) + "\n")
+            # uart.write("xp = " + str(xp) + " yp = " + str(yp) + "\n")
 
                 
     except Exception as e:
