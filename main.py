@@ -4,6 +4,9 @@ from st7735 import ST7735
 
 SCREEN_WIDTH = 160
 SCREEN_HEIGHT = 128
+BORDER_WIDTH = 8
+MAX_X = SCREEN_WIDTH - BORDER_WIDTH
+MAX_Y = SCREEN_HEIGHT - BORDER_WIDTH
 COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
 PLAYER_MOVEMENT_SLEEP = 1
@@ -35,9 +38,6 @@ def main():
         player_width = len(PLAYER_SPRITE[0])
         player_height = len(PLAYER_SPRITE)
         
-        max_x = SCREEN_WIDTH - player_width
-        max_y = SCREEN_HEIGHT - player_height
-        
         xp = SCREEN_WIDTH // 2 - player_width // 2
         yp = SCREEN_HEIGHT // 2 - player_height // 2
         
@@ -52,25 +52,25 @@ def main():
                 old_yp = yp
                 old_xp = xp
                 yp -=1
-                yp = max(yp, 0)
+                yp = max(yp, BORDER_WIDTH)
                 draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jdown == 1:
                 old_yp = yp
                 old_xp = xp
                 yp += 1
-                yp = min(yp, max_y)
+                yp = min(yp, MAX_Y)
                 draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jleft == 1:
                 old_xp = xp
                 old_yp = yp
                 xp -= 1
-                xp = max(xp, 0)
+                xp = max(xp, BORDER_WIDTH)
                 draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jright == 1:
                 old_xp = xp
                 old_yp = yp
                 xp += 1
-                xp = min(xp, max_x)
+                xp = min(xp, MAX_X)
                 draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
                 
     except Exception as e:
