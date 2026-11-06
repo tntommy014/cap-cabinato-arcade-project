@@ -133,6 +133,66 @@ class ST7735:
                 if run_start < column and run_x0 <= run_x1:
                     self._write_run(run_x0, pixel_y, run_x1, pixel_y, rgb565)
 
+    def move_sprite(
+        self,
+        sprite: list,
+        old_x: int,
+        old_y: int,
+        x: int,
+        y: int,
+        color: str,
+        background: str,
+    ) -> None:
+        if x == old_x and y == old_y:
+            return
+
+        sprite_height = len(sprite)
+        sprite_width = max((len(row) for row in sprite), default=0)
+        if not sprite_width or not sprite_height:
+            return
+
+        x0 = max(min(old_x, x), 0)
+        y0 = max(min(old_y, y), 0)
+        x1 = min(max(old_x, x) + sprite_width - 1, self.WIDTH - 1)
+        y1 = min(max(old_y, y) + sprite_height - 1, self.HEIGHT - 1)
+        if x0 > x1 or y0 > y1:
+            return
+
+        foreground = self._color_to_rgb565(color)
+        background_rgb565 = self._color_to_rgb565(background)
+        self._set_window(x0, y0, x1, y1)
+        self._command(0x2C)
+        self._cs.write_digital(0)
+        self._dc.write_digital(1)
+
+        region_width = x1 - x0 + 1
+        remaining = region_width * (y1 - y0 + 1)
+        offset = 0
+        while remaining:
+            pixels = min(remaining, len(self._pixel_buffer) // 2)
+            for index in range(pixels):
+                pixel_x = x0 + (offset + index) % region_width
+                pixel_y = y0 + (offset + index) // region_width
+                sprite_row = pixel_y - y
+                sprite_column = pixel_x - x
+                pixel_color = background_rgb565
+                if (
+                    0 <= sprite_row < sprite_height
+                    and 0 <= sprite_column < len(sprite[sprite_row])
+                    and sprite[sprite_row][sprite_column] == 1
+                ):
+                    pixel_color = foreground
+
+                buffer_offset = index * 2
+                self._pixel_buffer[buffer_offset] = pixel_color >> 8
+                self._pixel_buffer[buffer_offset + 1] = pixel_color & 0xFF
+
+            spi.write(self._pixel_buffer_view[:pixels * 2])
+            offset += pixels
+            remaining -= pixels
+
+        self._cs.write_digital(1)
+
     def draw_text(self, text: str, x: int, y: int, color: str) -> None:
         lines = text.split("\n")
         text_width = max((len(line) for line in lines), default=0) * 6

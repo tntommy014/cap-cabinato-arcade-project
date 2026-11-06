@@ -18,8 +18,7 @@ PLAYER_SPRITE = [[0, 1, 1, 1, 0],
                  [0, 1, 1, 1, 0]]
 
 def draw_sprite(x, y, old_x, old_y, sprite):
-    screen.draw_matrix(sprite, old_x, old_y, BACKGROUND_COLOR)
-    screen.draw_matrix(sprite, x, y, COLOR)
+    screen.move_sprite(sprite, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
 
 def main():
