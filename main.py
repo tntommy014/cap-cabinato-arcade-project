@@ -13,9 +13,9 @@ yp = SCREEN_HEIGHT // 2
 old_xp = xp
 old_yp = yp
 
-def draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp):
-    screen.draw_pixel(x=old_xp, y=old_yp, color=BACKGROUND_COLOR)
-    screen.draw_pixel(x=xp, y=yp, color=COLOR)
+def draw_player(x, y, old_x, old_y):
+    screen.draw_pixel(x=old_x, y=old_y, color=BACKGROUND_COLOR)
+    screen.draw_pixel(x=x, y=y, color=COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
 
 def main():
@@ -43,23 +43,23 @@ def main():
             if jup == 1:
                 old_yp = yp
                 old_xp = xp
-                yp = yp - 1 
-                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
+                yp -= 1 
+                draw_player(xp, yp, old_xp, old_yp)
             if jdown == 1:
                 old_yp = yp
                 old_xp = xp
-                yp = yp + 1
-                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
+                yp += 1
+                draw_player(xp, yp, old_xp, old_yp)
             if jleft == 1:
                 old_xp = xp
                 old_yp = yp
-                xp = xp - 1
-                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
+                xp -= 1
+                draw_player(xp, yp, old_xp, old_yp)
             if jright == 1:
                 old_xp = xp
                 old_yp = yp
-                xp = xp + 1
-                draw_player(xp=xp, yp=yp, old_xp=old_xp, old_yp=old_yp)
+                xp += 1
+                draw_player(xp, yp, old_xp, old_yp)
             # uart.write("jup = " + str(jup) + " jdown = " + str(jdown) + " jleft = " + str(jleft) + " jright = " + str(jright) + "\n")
             # uart.write("xp = " + str(xp) + " yp = " + str(yp) + "\n")
 
