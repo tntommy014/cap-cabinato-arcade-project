@@ -19,6 +19,8 @@ PLAYER_SPRITE = [[0, 1, 1, 1, 0],
                  [1, 1, 0, 1, 1],
                  [1, 1, 0, 1, 1],
                  [0, 1, 1, 1, 0]]
+PLAYER_WIDTH = len(PLAYER_SPRITE[0])
+PLAYER_HEIGHT = len(PLAYER_SPRITE)
 
 def draw_sprite(x, y, old_x, old_y, sprite):
     screen.move_sprite(sprite, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
@@ -35,11 +37,8 @@ def main():
         pin7.set_pull(pin7.PULL_DOWN)
         pin6.set_pull(pin6.PULL_DOWN)
         
-        player_width = len(PLAYER_SPRITE[0])
-        player_height = len(PLAYER_SPRITE)
-        
-        xp = SCREEN_WIDTH // 2 - player_width // 2
-        yp = SCREEN_HEIGHT // 2 - player_height // 2
+        xp = SCREEN_WIDTH // 2 - PLAYER_WIDTH // 2
+        yp = SCREEN_HEIGHT // 2 - PLAYER_HEIGHT // 2
         
         screen.draw_matrix(PLAYER_SPRITE, xp, yp, COLOR)
 
