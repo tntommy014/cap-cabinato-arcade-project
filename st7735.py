@@ -195,7 +195,6 @@ class ST7735:
 
     def draw_text(self, text: str, x: int, y: int, color: str) -> None:
         lines = text.split("\n")
-        text_width = max((len(line) for line in lines), default=0) * 6
         for character in text:
             if character != "\n" and character not in _FONT_5X7:
                 raise ValueError("unsupported character: " + character)
@@ -205,8 +204,8 @@ class ST7735:
             for character_number, character in enumerate(line):
                 glyph = _FONT_5X7[character]
                 for row, pixels in enumerate(glyph):
-                    pixel_x = x + line_number * 8 + row
-                    if not 0 <= pixel_x < self.WIDTH:
+                    pixel_y = y + line_number * 8 + row
+                    if not 0 <= pixel_y < self.HEIGHT:
                         continue
 
                     column = 0
@@ -217,12 +216,12 @@ class ST7735:
                         while column < len(pixels) and pixels[column] == "1":
                             column += 1
 
-                        run_y0 = y + text_width - character_number * 6 - column
-                        run_y1 = y + text_width - 1 - (character_number * 6 + run_start)
-                        run_y0 = max(run_y0, 0)
-                        run_y1 = min(run_y1, self.HEIGHT - 1)
-                        if run_start < column and run_y0 <= run_y1:
-                            self._write_run(pixel_x, run_y0, pixel_x, run_y1, rgb565)
+                        run_x0 = x + character_number * 6 + run_start
+                        run_x1 = x + character_number * 6 + column - 1
+                        run_x0 = max(run_x0, 0)
+                        run_x1 = min(run_x1, self.WIDTH - 1)
+                        if run_start < column and run_x0 <= run_x1:
+                            self._write_run(run_x0, pixel_y, run_x1, pixel_y, rgb565)
 
     def fill(self, color: int) -> None:
         if not 0 <= color <= 0xFFFF:
