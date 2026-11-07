@@ -41,6 +41,22 @@ CLEAR_COIN = [[0, 0, 0],
 PLAYER_WIDTH = len(PLAYER_SPRITE[0])
 PLAYER_HEIGHT = len(PLAYER_SPRITE)
 
+
+def are_colliding(sprite1, sprite2):
+    matrix1, x1, y1 = sprite1
+    matrix2, x2, y2 = sprite2
+
+    width1, height1 = len(matrix1[0]), len(matrix1)
+    width2, height2 = len(matrix2[0]), len(matrix2)
+
+    return (
+        x1 < x2 + width2
+        and x2 < x1 + width1
+        and y1 < y2 + height2
+        and y2 < y1 + height1
+    )
+
+
 def draw_sprite(x, y, old_x, old_y, sprite):
     screen.move_sprite(sprite, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
@@ -113,6 +129,8 @@ def main():
                 xp = min(xp, MAX_X)
                 draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             collision(xp, yp)
+            # if are_colliding((PLAYER_SPRITE, xp, yp), (COIN_SPRITE, xcoin, ycoin)):
+            #     uart.write("Collision detected!\n")
                 
     except Exception as e:
                 uart.write(repr(e))
