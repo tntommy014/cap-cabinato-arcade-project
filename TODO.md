@@ -3,13 +3,11 @@
 
 # Dindonkey
 - fix bordo
-  - definire area punteggo e timer
+  - definire area di punteggo, timer e coin (non farlo spawnare fuori)
 - sistemare nomi funzioni
 - fare clear area
 
 # TNTommy
-- punteggio
-  - 10 punti a ogni coin preso
 - timer
 - end game
   - quando finisce il timer il gioco si ferma e viene fuori la scritta "END GAME" con sotto "YOU WIN" se hai raggiunto un tot punteggio altrimenti "YOU LOSE", mostrando anche il punteggio
