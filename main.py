@@ -1,4 +1,7 @@
 
+from random import randint, random
+import random
+
 from microbit import *  # pyright: ignore[reportMissingModuleSource]
 from st7735 import ST7735
 
@@ -9,7 +12,10 @@ MAX_X = SCREEN_WIDTH - BORDER_WIDTH
 MAX_Y = SCREEN_HEIGHT - BORDER_WIDTH
 COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
+COLOR_COIN = "#FFFF00"
 PLAYER_MOVEMENT_SLEEP = 1
+xcoin = random.randint(0, 128)
+ycoin = random.randint(0, 128)
 
 # PLAYER_SPRITE = [[0, 1, 0],
 #                  [1, 1, 1],
@@ -21,6 +27,12 @@ PLAYER_SPRITE = [[0, 1, 1, 1, 0],
                  [0, 1, 1, 1, 0],
                  [0, 1, 0, 1, 0]
                  ]
+
+COIN_SPRITE = [[1, 1, 1],
+               [1, 0, 1],
+               [1, 1, 1]
+               ]
+
 PLAYER_WIDTH = len(PLAYER_SPRITE[0])
 PLAYER_HEIGHT = len(PLAYER_SPRITE)
 
@@ -28,6 +40,8 @@ def draw_sprite(x, y, old_x, old_y, sprite):
     screen.move_sprite(sprite, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
 
+def draw_coin(xcoin, ycoin):
+    screen.draw_pixel(xcoin, ycoin, color=COLOR_COIN)
 
 def main():
     try:
@@ -43,6 +57,7 @@ def main():
         yp = SCREEN_HEIGHT // 2 - PLAYER_HEIGHT // 2
         
         screen.draw_matrix(PLAYER_SPRITE, xp, yp, COLOR)
+        draw_coin(xcoin, ycoin)
 
         while True:
             jup = pin3.read_digital()
