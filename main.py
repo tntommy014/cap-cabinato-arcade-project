@@ -16,9 +16,11 @@ PLAYER_MOVEMENT_SLEEP = 1
 #                  [0, 1, 0]]
 
 PLAYER_SPRITE = [[0, 1, 1, 1, 0],
-                 [1, 1, 0, 1, 1],
-                 [1, 1, 0, 1, 1],
-                 [0, 1, 1, 1, 0]]
+                 [0, 1, 0, 1, 0],
+                 [1, 1, 1, 1, 1],
+                 [0, 1, 1, 1, 0],
+                 [0, 1, 0, 1, 0]
+                 ]
 PLAYER_WIDTH = len(PLAYER_SPRITE[0])
 PLAYER_HEIGHT = len(PLAYER_SPRITE)
 
