@@ -13,6 +13,7 @@ MAX_Y = SCREEN_HEIGHT - BORDER_WIDTH
 COLOR="#00FF00"
 BACKGROUND_COLOR="#000000"
 COLOR_COIN = "#FFFF00"
+TEXT_COLOR = "#FF0000"
 PLAYER_MOVEMENT_SLEEP = 3
 
 PLAYER_SPRITE = [[0, 1, 1, 1, 0],
@@ -73,11 +74,20 @@ def main():
         
         xp = SCREEN_WIDTH // 2 - PLAYER_WIDTH // 2
         yp = SCREEN_HEIGHT // 2 - PLAYER_HEIGHT // 2
-        xcoin = random.randint(0, 128)
-        ycoin = random.randint(0, 128)
+        xcoin = random.randint(1, 152)
+        ycoin = random.randint(8, 120)
+        punteggio = 0
 
         screen.draw_matrix(PLAYER_SPRITE, xp, yp, COLOR)
         draw_coin(xcoin, ycoin, COIN_SPRITE)
+
+        screen.draw_text(
+            text="PUNTEGGIO: " + str(punteggio),
+            x=2,
+            y=0,
+            color=TEXT_COLOR
+            )
+
 
         while True:
             jup = pin3.read_digital()
@@ -112,6 +122,19 @@ def main():
                 clear_coin(xcoin, ycoin)
                 xcoin = random.randint(0, 128)
                 ycoin = random.randint(0, 128)
+                punteggio += 10
+                screen.draw_text(
+                    text="          " + "###",
+                    x=2,
+                    y=0,
+                    color=BACKGROUND_COLOR
+                    )
+                screen.draw_text(
+                    text="          " + str(punteggio),
+                    x=2,
+                    y=0,
+                    color=TEXT_COLOR
+                    )
                 draw_coin(xcoin, ycoin, COIN_SPRITE)
                 
     except Exception as e:
