@@ -2,7 +2,8 @@
 from random import randint, random
 import random
 
-from microbit import *  # pyright: ignore[reportMissingModuleSource]
+from microbit import *
+import microbit  # pyright: ignore[reportMissingModuleSource]
 from st7735 import ST7735
 
 SCREEN_WIDTH = 160
@@ -71,6 +72,7 @@ def main():
         pin4.set_pull(pin4.PULL_DOWN)
         pin7.set_pull(pin7.PULL_DOWN)
         pin6.set_pull(pin6.PULL_DOWN)
+        pin8.set_pull(pin8.PULL_DOWN)
         
         xp = SCREEN_WIDTH // 2 - PLAYER_WIDTH // 2
         yp = SCREEN_HEIGHT // 2 - PLAYER_HEIGHT // 2
@@ -136,6 +138,9 @@ def main():
                     color=TEXT_COLOR
                     )
                 draw_coin(xcoin, ycoin, COIN_SPRITE)
+            if pin8.read_digital() == 1:
+                uart.write("RESET")
+                microbit.reset()
                 
     except Exception as e:
                 uart.write(repr(e))
