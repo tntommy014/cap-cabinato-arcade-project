@@ -53,15 +53,15 @@ def are_colliding(sprite1, sprite2):
     )
 
 
-def draw_sprite(x, y, old_x, old_y, sprite):
+def move_sprite(x, y, old_x, old_y, sprite):
     screen.move_sprite(sprite, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
 
 def draw_coin(xcoin, ycoin, COIN_SPRITE):
-    screen.draw_matrix(COIN_SPRITE, xcoin, ycoin, COLOR_COIN)
+    screen.draw_sprite(COIN_SPRITE, xcoin, ycoin, COLOR_COIN)
 
 def clear_coin(xcoin, ycoin):
-     screen.draw_matrix(CLEAR_COIN, xcoin, ycoin, BACKGROUND_COLOR)
+     screen.draw_sprite(CLEAR_COIN, xcoin, ycoin, BACKGROUND_COLOR)
 
 def draw_timer(counter):
     screen.draw_text(
@@ -88,7 +88,7 @@ def main():
         ycoin = random.randint(8, 120)
         punteggio = 0
         
-        screen.draw_matrix(PLAYER_SPRITE, xp, yp, COLOR)
+        screen.draw_sprite(PLAYER_SPRITE, xp, yp, COLOR)
         draw_coin(xcoin, ycoin, COIN_SPRITE)
 
         screen.draw_text(
@@ -118,25 +118,25 @@ def main():
                 old_xp = xp
                 yp -=1
                 yp = max(yp, BORDER_WIDTH)
-                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jdown == 1:
                 old_yp = yp
                 old_xp = xp
                 yp += 1
                 yp = min(yp, MAX_Y)
-                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jleft == 1:
                 old_xp = xp
                 old_yp = yp
                 xp -= 1
                 xp = max(xp, BORDER_WIDTH)
-                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if jright == 1:
                 old_xp = xp
                 old_yp = yp
                 xp += 1
                 xp = min(xp, MAX_X)
-                draw_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
             if are_colliding((PLAYER_SPRITE, xp, yp), (COIN_SPRITE, xcoin, ycoin)):
                 clear_coin(xcoin, ycoin)
                 xcoin = random.randint(0, 128)

@@ -5,7 +5,7 @@
 - fix bordo
   - definire area di punteggo, timer e coin (non farlo spawnare fuori)
 - sistemare nomi funzioni
-- fare clear area
+- fare clear sprite per non fare clear coin 
 
 # TNTommy
 - timer

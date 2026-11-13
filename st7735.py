@@ -115,7 +115,7 @@ class ST7735:
         y = min(max(y, 0), self.HEIGHT - 1)
         self._write_run(x, y, x, y, self._color_to_rgb565(color))
 
-    def draw_matrix(self, matrix: list, x: int, y: int, color: str) -> None:
+    def draw_sprite(self, matrix: list, x: int, y: int, color: str) -> None:
         rgb565 = self._color_to_rgb565(color)
 
         for row, values in enumerate(matrix):
