@@ -76,10 +76,27 @@ def draw_coin(x, y):
 def clear_coin(x, y):
     screen.draw_sprite(CLEAR_COIN, x, y, BACKGROUND_COLOR)
 
-def draw_timer(counter):
+def draw_timer(time):
     screen.draw_text(
-        text= str(counter),
+        text= str(time),
         x=100,
+        y=0,
+        color=TEXT_COLOR
+        )
+    
+def update_timer(timer, timer_last_update):
+    now = running_time() # ignoralo
+    # qui entra ogni 1000 millisecondi, quindi ogni secondo
+    if now - timer_last_update >= 1000:
+        timer += 1 # incremento il timer di 1 secondo, cambia questo se vuoi farlo decrementare
+        timer_last_update = now # ignoralo
+        draw_timer(timer) # disegno il timer
+    return timer, timer_last_update # serve per avere i valori aggiornati nel while True
+
+def update_score(score):
+    screen.draw_text(
+        text=str(score),
+        x=61,
         y=0,
         color=TEXT_COLOR
         )
@@ -90,6 +107,9 @@ def read_joystick():
     jleft = pin7.read_digital()
     jright = pin6.read_digital()
     return jup, jdown, jleft, jright
+
+def reset_pressed():
+    return pin8.read_digital() == 1
 
 def update_player(xp, yp):
     jup, jdown, jleft, jright = read_joystick()
@@ -109,11 +129,12 @@ def update_player(xp, yp):
         old_xp, old_yp = xp, yp
         xp = min(xp + 1, MAX_X)
         move_player(xp, yp, old_xp, old_yp)
-    return xp, yp
+    return xp, yp # serve per avere i valori aggiornati nel while True
 
 def main():
     try:
         global screen
+        # ho spostato qui dentro tutti i ciaffi di preparazione
         init()
         
         xp = SCREEN_WIDTH // 2 - PLAYER_WIDTH // 2
@@ -132,31 +153,28 @@ def main():
             color=TEXT_COLOR
             )
         
-        timer = 0
-        timer_last_update = running_time()
+        # un esempio di timer
+        timer = 0 # cambia questo se vuoi farlo partire da un certo numero di secondi
+        timer_last_update = running_time() # questo te lo spiego poi bene
         draw_timer(timer)
         
         while True:
-            now = running_time()
-            if now - timer_last_update >= 1000:
-                timer += 1
-                timer_last_update = now
-                draw_timer(timer)
-
+            # anche questa te la spiego poi bene ma guarda dentro update_timer
+            timer, timer_last_update = update_timer(timer, timer_last_update)
+            
+            # ho messo qui dentro tutta la parte del joystick per il player
             xp, yp = update_player(xp, yp)
+            
             if are_colliding((PLAYER_SPRITE, xp, yp), (COIN_SPRITE, xcoin, ycoin)):
                 clear_coin(xcoin, ycoin)
                 xcoin = random.randint(0, 128)
                 ycoin = random.randint(0, 128)
                 punteggio += 10
-                screen.draw_text(
-                    text=str(punteggio),
-                    x=61,
-                    y=0,
-                    color=TEXT_COLOR
-                    )
+                update_score(punteggio)
                 draw_coin(xcoin, ycoin)
-            if pin8.read_digital() == 1:
+            
+            # ho spostato qui dentro il controllo sul pin8    
+            if reset_pressed():
                 microbit.reset()
                 
     except Exception as e:
