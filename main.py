@@ -63,6 +63,14 @@ def draw_coin(xcoin, ycoin, COIN_SPRITE):
 def clear_coin(xcoin, ycoin):
      screen.draw_matrix(CLEAR_COIN, xcoin, ycoin, BACKGROUND_COLOR)
 
+def draw_timer(counter):
+    screen.draw_text(
+        text= str(counter),
+        x=100,
+        y=0,
+        color=TEXT_COLOR
+        )
+
 def main():
     try:
         global screen
@@ -79,7 +87,7 @@ def main():
         xcoin = random.randint(1, 152)
         ycoin = random.randint(8, 120)
         punteggio = 0
-
+        
         screen.draw_matrix(PLAYER_SPRITE, xp, yp, COLOR)
         draw_coin(xcoin, ycoin, COIN_SPRITE)
 
@@ -89,7 +97,18 @@ def main():
             y=0,
             color=TEXT_COLOR
             )
+        
+        timer = 0
+        timer_last_update = running_time()
+        draw_timer(timer)
+        
         while True:
+            now = running_time()
+            if now - timer_last_update >= 1000:
+                timer += 1
+                timer_last_update = now
+                draw_timer(timer)
+
             jup = pin3.read_digital()
             jdown = pin4.read_digital()
             jleft = pin7.read_digital()
