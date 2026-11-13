@@ -63,16 +63,15 @@ def are_colliding(sprite1, sprite2):
         and y2 < y1 + height1
     )
 
-
-def move_sprite(x, y, old_x, old_y, sprite):
-    screen.move_sprite(sprite, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
+def move_player(x, y, old_x, old_y):
+    screen.move_sprite(PLAYER_SPRITE, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
 
-def draw_coin(xcoin, ycoin, COIN_SPRITE):
-    screen.draw_sprite(COIN_SPRITE, xcoin, ycoin, COLOR_COIN)
+def draw_coin(x, y):
+    screen.draw_sprite(COIN_SPRITE, x, y, COLOR_COIN)
 
-def clear_coin(xcoin, ycoin):
-    screen.draw_sprite(CLEAR_COIN, xcoin, ycoin, BACKGROUND_COLOR)
+def clear_coin(x, y):
+    screen.draw_sprite(CLEAR_COIN, x, y, BACKGROUND_COLOR)
 
 def draw_timer(counter):
     screen.draw_text(
@@ -94,7 +93,7 @@ def main():
         punteggio = 0
         
         screen.draw_sprite(PLAYER_SPRITE, xp, yp, COLOR)
-        draw_coin(xcoin, ycoin, COIN_SPRITE)
+        draw_coin(xcoin, ycoin)
 
         screen.draw_text(
             text="PUNTEGGIO:" + str(punteggio),
@@ -123,25 +122,25 @@ def main():
                 old_xp = xp
                 yp -=1
                 yp = max(yp, BORDER_WIDTH)
-                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_player(xp, yp, old_xp, old_yp)
             if jdown == 1:
                 old_yp = yp
                 old_xp = xp
                 yp += 1
                 yp = min(yp, MAX_Y)
-                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_player(xp, yp, old_xp, old_yp)
             if jleft == 1:
                 old_xp = xp
                 old_yp = yp
                 xp -= 1
                 xp = max(xp, BORDER_WIDTH)
-                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_player(xp, yp, old_xp, old_yp)
             if jright == 1:
                 old_xp = xp
                 old_yp = yp
                 xp += 1
                 xp = min(xp, MAX_X)
-                move_sprite(xp, yp, old_xp, old_yp, PLAYER_SPRITE)
+                move_player(xp, yp, old_xp, old_yp)
             if are_colliding((PLAYER_SPRITE, xp, yp), (COIN_SPRITE, xcoin, ycoin)):
                 clear_coin(xcoin, ycoin)
                 xcoin = random.randint(0, 128)
@@ -153,7 +152,7 @@ def main():
                     y=0,
                     color=TEXT_COLOR
                     )
-                draw_coin(xcoin, ycoin, COIN_SPRITE)
+                draw_coin(xcoin, ycoin)
             if pin8.read_digital() == 1:
                 uart.write("RESET")
                 microbit.reset()
