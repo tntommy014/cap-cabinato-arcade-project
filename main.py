@@ -38,6 +38,17 @@ PLAYER_WIDTH = len(PLAYER_SPRITE[0])
 PLAYER_HEIGHT = len(PLAYER_SPRITE)
 
 
+
+def init():
+    global screen
+    screen = ST7735()
+    display.off()
+    pin3.set_pull(pin3.PULL_DOWN)
+    pin4.set_pull(pin4.PULL_DOWN)
+    pin7.set_pull(pin7.PULL_DOWN)
+    pin6.set_pull(pin6.PULL_DOWN)
+    pin8.set_pull(pin8.PULL_DOWN)
+    
 def are_colliding(sprite1, sprite2):
     matrix1, x1, y1 = sprite1
     matrix2, x2, y2 = sprite2
@@ -61,7 +72,7 @@ def draw_coin(xcoin, ycoin, COIN_SPRITE):
     screen.draw_sprite(COIN_SPRITE, xcoin, ycoin, COLOR_COIN)
 
 def clear_coin(xcoin, ycoin):
-     screen.draw_sprite(CLEAR_COIN, xcoin, ycoin, BACKGROUND_COLOR)
+    screen.draw_sprite(CLEAR_COIN, xcoin, ycoin, BACKGROUND_COLOR)
 
 def draw_timer(counter):
     screen.draw_text(
@@ -74,13 +85,7 @@ def draw_timer(counter):
 def main():
     try:
         global screen
-        screen = ST7735()
-        display.off()
-        pin3.set_pull(pin3.PULL_DOWN)
-        pin4.set_pull(pin4.PULL_DOWN)
-        pin7.set_pull(pin7.PULL_DOWN)
-        pin6.set_pull(pin6.PULL_DOWN)
-        pin8.set_pull(pin8.PULL_DOWN)
+        init()
         
         xp = SCREEN_WIDTH // 2 - PLAYER_WIDTH // 2
         yp = SCREEN_HEIGHT // 2 - PLAYER_HEIGHT // 2
