@@ -2,10 +2,6 @@
 - https://microbit-micropython.readthedocs.io/en/v2-docs/index.html
 
 # Dindonkey
-- fix bordo
-  - definire area di punteggo, timer e coin (non farlo spawnare fuori)
-- sistemare nomi funzioni
-- fare clear sprite per non fare clear coin 
 
 # TNTommy
 - timer

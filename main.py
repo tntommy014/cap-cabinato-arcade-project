@@ -29,11 +29,6 @@ COIN_SPRITE = [[1, 1, 1],
                [1, 1, 1]
                ]
 
-CLEAR_COIN = [[1, 1, 1],
-              [1, 1, 1],
-              [1, 1, 1]
-               ]
-
 PLAYER_WIDTH = len(PLAYER_SPRITE[0])
 PLAYER_HEIGHT = len(PLAYER_SPRITE)
 
@@ -74,7 +69,7 @@ def draw_coin(x, y):
     screen.draw_sprite(COIN_SPRITE, x, y, COLOR_COIN)
 
 def clear_coin(x, y):
-    screen.draw_sprite(CLEAR_COIN, x, y, BACKGROUND_COLOR)
+    screen.clear_sprite(COIN_SPRITE, x, y)
 
 def draw_timer(time):
     screen.draw_text(

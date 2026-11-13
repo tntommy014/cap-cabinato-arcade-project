@@ -136,6 +136,19 @@ class ST7735:
                 if run_start < column and run_x0 <= run_x1:
                     self._write_run(run_x0, pixel_y, run_x1, pixel_y, rgb565)
 
+    def clear_sprite(self, sprite: list, x: int, y: int) -> None:
+        sprite_height = len(sprite)
+        sprite_width = max((len(row) for row in sprite), default=0)
+        if not sprite_width or not sprite_height:
+            return
+
+        x0 = max(x, 0)
+        y0 = max(y, 0)
+        x1 = min(x + sprite_width - 1, self.WIDTH - 1)
+        y1 = min(y + sprite_height - 1, self.HEIGHT - 1)
+        if x0 <= x1 and y0 <= y1:
+            self._write_run(x0, y0, x1, y1, 0x0000)
+
     def move_sprite(
         self,
         sprite: list,
