@@ -84,12 +84,11 @@ def main():
         draw_coin(xcoin, ycoin, COIN_SPRITE)
 
         screen.draw_text(
-            text="PUNTEGGIO: " + str(punteggio),
+            text="PUNTEGGIO:",
             x=2,
             y=0,
             color=TEXT_COLOR
             )
-
 
         while True:
             jup = pin3.read_digital()
@@ -126,14 +125,8 @@ def main():
                 ycoin = random.randint(0, 128)
                 punteggio += 10
                 screen.draw_text(
-                    text="          " + "###",
-                    x=2,
-                    y=0,
-                    color=BACKGROUND_COLOR
-                    )
-                screen.draw_text(
-                    text="          " + str(punteggio),
-                    x=2,
+                    text=str(punteggio),
+                    x=60,
                     y=0,
                     color=TEXT_COLOR
                     )

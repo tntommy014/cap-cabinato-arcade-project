@@ -81,6 +81,7 @@ class ST7735:
         self._dc.write_digital(1)
         self._pixel_buffer = bytearray(256)
         self._pixel_buffer_view = memoryview(self._pixel_buffer)
+        self._text_areas = {}
 
         spi.init(baudrate=8_000_000, bits=8, mode=0, sclk=pin13, mosi=pin15, miso=pin14)
 
@@ -202,6 +203,25 @@ class ST7735:
                 raise ValueError("unsupported character: " + character)
 
         rgb565 = self._color_to_rgb565(color)
+        area = (x, y)
+        previous_width, previous_height = self._text_areas.get(area, (0, 0))
+        width = max((len(line) for line in lines), default=0) * 6
+        height = len(lines) * 8
+        clear_width = max(previous_width, width)
+        clear_height = max(previous_height, height)
+        if clear_width and clear_height:
+            x0 = max(x, 0)
+            y0 = max(y, 0)
+            x1 = min(x + clear_width - 1, self.WIDTH - 1)
+            y1 = min(y + clear_height - 1, self.HEIGHT - 1)
+            if x0 <= x1 and y0 <= y1:
+                self._write_run(x0, y0, x1, y1, 0x0000)
+
+        if width and height:
+            self._text_areas[area] = (width, height)
+        else:
+            self._text_areas.pop(area, None)
+
         for line_number, line in enumerate(lines):
             for character_number, character in enumerate(line):
                 glyph = _FONT_5X7[character]
