@@ -91,6 +91,26 @@ def read_joystick():
     jright = pin6.read_digital()
     return jup, jdown, jleft, jright
 
+def update_player(xp, yp):
+    jup, jdown, jleft, jright = read_joystick()
+    if jup == 1:
+        old_xp, old_yp = xp, yp
+        yp = max(yp - 1, BORDER_WIDTH)
+        move_player(xp, yp, old_xp, old_yp)
+    if jdown == 1:
+        old_xp, old_yp = xp, yp
+        yp = min(yp + 1, MAX_Y)
+        move_player(xp, yp, old_xp, old_yp)
+    if jleft == 1:
+        old_xp, old_yp = xp, yp
+        xp = max(xp - 1, BORDER_WIDTH)
+        move_player(xp, yp, old_xp, old_yp)
+    if jright == 1:
+        old_xp, old_yp = xp, yp
+        xp = min(xp + 1, MAX_X)
+        move_player(xp, yp, old_xp, old_yp)
+    return xp, yp
+
 def main():
     try:
         global screen
@@ -123,31 +143,7 @@ def main():
                 timer_last_update = now
                 draw_timer(timer)
 
-            jup, jdown, jleft, jright = read_joystick()
-            if jup == 1:
-                old_yp = yp
-                old_xp = xp
-                yp -=1
-                yp = max(yp, BORDER_WIDTH)
-                move_player(xp, yp, old_xp, old_yp)
-            if jdown == 1:
-                old_yp = yp
-                old_xp = xp
-                yp += 1
-                yp = min(yp, MAX_Y)
-                move_player(xp, yp, old_xp, old_yp)
-            if jleft == 1:
-                old_xp = xp
-                old_yp = yp
-                xp -= 1
-                xp = max(xp, BORDER_WIDTH)
-                move_player(xp, yp, old_xp, old_yp)
-            if jright == 1:
-                old_xp = xp
-                old_yp = yp
-                xp += 1
-                xp = min(xp, MAX_X)
-                move_player(xp, yp, old_xp, old_yp)
+            xp, yp = update_player(xp, yp)
             if are_colliding((PLAYER_SPRITE, xp, yp), (COIN_SPRITE, xcoin, ycoin)):
                 clear_coin(xcoin, ycoin)
                 xcoin = random.randint(0, 128)
