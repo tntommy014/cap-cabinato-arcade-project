@@ -209,41 +209,62 @@ class ST7735:
         height = len(lines) * 8
         clear_width = max(previous_width, width)
         clear_height = max(previous_height, height)
-        if clear_width and clear_height:
-            x0 = max(x, 0)
-            y0 = max(y, 0)
-            x1 = min(x + clear_width - 1, self.WIDTH - 1)
-            y1 = min(y + clear_height - 1, self.HEIGHT - 1)
-            if x0 <= x1 and y0 <= y1:
-                self._write_run(x0, y0, x1, y1, 0x0000)
+        x0 = max(x, 0)
+        y0 = max(y, 0)
+        x1 = min(x + clear_width - 1, self.WIDTH - 1)
+        y1 = min(y + clear_height - 1, self.HEIGHT - 1)
 
         if width and height:
             self._text_areas[area] = (width, height)
         else:
             self._text_areas.pop(area, None)
 
-        for line_number, line in enumerate(lines):
-            for character_number, character in enumerate(line):
-                glyph = _FONT_5X7[character]
-                for row, pixels in enumerate(glyph):
-                    pixel_y = y + line_number * 8 + row
-                    if not 0 <= pixel_y < self.HEIGHT:
-                        continue
+        if x0 > x1 or y0 > y1:
+            return
 
-                    column = 0
-                    while column < len(pixels):
-                        while column < len(pixels) and pixels[column] != "1":
-                            column += 1
-                        run_start = column
-                        while column < len(pixels) and pixels[column] == "1":
-                            column += 1
+        self._set_window(x0, y0, x1, y1)
+        self._command(0x2C)
+        self._cs.write_digital(0)
+        self._dc.write_digital(1)
 
-                        run_x0 = x + character_number * 6 + run_start
-                        run_x1 = x + character_number * 6 + column - 1
-                        run_x0 = max(run_x0, 0)
-                        run_x1 = min(run_x1, self.WIDTH - 1)
-                        if run_start < column and run_x0 <= run_x1:
-                            self._write_run(run_x0, pixel_y, run_x1, pixel_y, rgb565)
+        buffer_pixels = len(self._pixel_buffer) // 2
+        region_width = x1 - x0 + 1
+        foreground_high = rgb565 >> 8
+        foreground_low = rgb565 & 0xFF
+        offset = 0
+        while offset < region_width * (y1 - y0 + 1):
+            pixel_y = y0 + offset // region_width
+            row_offset = offset % region_width
+            pixels = min(buffer_pixels, region_width - row_offset)
+            text_y = pixel_y - y
+            line_number = text_y // 8
+            glyph_row = text_y % 8
+
+            for index in range(pixels):
+                text_x = x0 + row_offset + index - x
+                pixel_color = 0
+                if 0 <= line_number < len(lines) and 0 <= text_x < width:
+                    character_number = text_x // 6
+                    glyph_column = text_x % 6
+                    if glyph_row < 7 and glyph_column < 5:
+                        line = lines[line_number]
+                        if character_number < len(line):
+                            glyph = _FONT_5X7[line[character_number]]
+                            if glyph[glyph_row][glyph_column] == "1":
+                                pixel_color = rgb565
+
+                buffer_offset = index * 2
+                self._pixel_buffer[buffer_offset] = (
+                    foreground_high if pixel_color else 0
+                )
+                self._pixel_buffer[buffer_offset + 1] = (
+                    foreground_low if pixel_color else 0
+                )
+
+            spi.write(self._pixel_buffer_view[:pixels * 2])
+            offset += pixels
+
+        self._cs.write_digital(1)
 
     def fill(self, color: int) -> None:
         if not 0 <= color <= 0xFFFF:
