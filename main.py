@@ -63,6 +63,9 @@ def are_colliding(sprite1, sprite2):
         and y2 < y1 + height1
     )
 
+def draw_player(x, y):
+    screen.draw_sprite(PLAYER_SPRITE, x, y, COLOR)
+
 def move_player(x, y, old_x, old_y):
     screen.move_sprite(PLAYER_SPRITE, old_x, old_y, x, y, COLOR, BACKGROUND_COLOR)
     sleep(PLAYER_MOVEMENT_SLEEP)
@@ -81,6 +84,13 @@ def draw_timer(counter):
         color=TEXT_COLOR
         )
 
+def read_joystick():
+    jup = pin3.read_digital()
+    jdown = pin4.read_digital()
+    jleft = pin7.read_digital()
+    jright = pin6.read_digital()
+    return jup, jdown, jleft, jright
+
 def main():
     try:
         global screen
@@ -92,7 +102,7 @@ def main():
         ycoin = random.randint(8, 120)
         punteggio = 0
         
-        screen.draw_sprite(PLAYER_SPRITE, xp, yp, COLOR)
+        draw_player(xp, yp)
         draw_coin(xcoin, ycoin)
 
         screen.draw_text(
@@ -113,10 +123,7 @@ def main():
                 timer_last_update = now
                 draw_timer(timer)
 
-            jup = pin3.read_digital()
-            jdown = pin4.read_digital()
-            jleft = pin7.read_digital()
-            jright = pin6.read_digital()
+            jup, jdown, jleft, jright = read_joystick()
             if jup == 1:
                 old_yp = yp
                 old_xp = xp
@@ -154,7 +161,6 @@ def main():
                     )
                 draw_coin(xcoin, ycoin)
             if pin8.read_digital() == 1:
-                uart.write("RESET")
                 microbit.reset()
                 
     except Exception as e:
