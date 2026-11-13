@@ -139,8 +139,8 @@ def main():
         
         xp = SCREEN_WIDTH // 2 - PLAYER_WIDTH // 2
         yp = SCREEN_HEIGHT // 2 - PLAYER_HEIGHT // 2
-        xcoin = random.randint(1, 152)
-        ycoin = random.randint(8, 120)
+        xcoin = random.randint(BORDER_WIDTH, MAX_X)
+        ycoin = random.randint(BORDER_WIDTH, MAX_Y)
         punteggio = 0
         
         draw_player(xp, yp)
@@ -167,8 +167,8 @@ def main():
             
             if are_colliding((PLAYER_SPRITE, xp, yp), (COIN_SPRITE, xcoin, ycoin)):
                 clear_coin(xcoin, ycoin)
-                xcoin = random.randint(0, 128)
-                ycoin = random.randint(0, 128)
+                xcoin = random.randint(BORDER_WIDTH, MAX_X)
+                ycoin = random.randint(BORDER_WIDTH, MAX_Y)
                 punteggio += 10
                 update_score(punteggio)
                 draw_coin(xcoin, ycoin)
